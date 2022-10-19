@@ -1,61 +1,101 @@
-#ifndef _MAIN_H_
-#define _MAIN_H_
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@Omafuru 
+judeiwuji
+/
+printf
+Public
+Code
+Issues
+Pull requests
+Actions
+Projects
+Security
+Insights
+printf/main.h
+@judeiwuji
+judeiwuji Corrections
+Latest commit 59b1a4f on Jul 13
+ History
+  2 contributors
+  @judeiwuji@ekottifiok
+  73 lines (72 sloc)  2.2 KB
 
-#include <stdarg.h>
-#include <unistd.h>
+#ifndef _MAIN_
+#define _MAIN_
+#include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
-/**
- * struct print - struct for printer functions
- * @type_arg: identifier
- * @f: pointer to a printer functions
- *
- * Description: struct that stores pointers to a
- * printer functions.
- */
-typedef struct print
+#define STR_TO_INT(val) (val - 48)
+#define INT_TO_STR(val) (val + 48)
+  /**
+   * struct ops - Struct ops
+   * @c: The character associated to this op
+   * @op: A callback function to perform the print
+   * operation.
+   */
+  typedef struct ops
 {
-	char *type_arg;
-	int (*f)(va_list, char *, unsigned int);
-} print_t;
-
+	char c;
+	int (*op)(int, char *, va_list);
+} op_t;
 int _printf(const char *format, ...);
-int print_prg(va_list __attribute__((unused)), char *, unsigned int);
-int print_chr(va_list arguments, char *buf, unsigned int ibuf);
-int print_str(va_list arguments, char *buf, unsigned int ibuf);
-int print_int(va_list arguments, char *buf, unsigned int ibuf);
-int print_bnr(va_list arguments, char *buf, unsigned int ibuf);
-int print_unt(va_list arguments, char *buf, unsigned int ibuf);
-int print_oct(va_list arguments, char *buf, unsigned int ibuf);
-int print_hex(va_list arguments, char *buf, unsigned int ibuf);
-int print_upx(va_list arguments, char *buf, unsigned int ibuf);
-int print_usr(va_list arguments, char *buf, unsigned int ibuf);
-int print_add(va_list arguments, char *buf, unsigned int ibuf);
-int print_rev(va_list arguments, char *buf, unsigned int ibuf);
-int print_rot(va_list arguments, char *buf, unsigned int ibuf);
-int prinlint(va_list arguments, char *buf, unsigned int ibuf);
-int prinlunt(va_list arguments, char *buf, unsigned int ibuf);
-int prinloct(va_list arguments, char *buf, unsigned int ibuf);
-int prinlhex(va_list arguments, char *buf, unsigned int ibuf);
-int prinlupx(va_list arguments, char *buf, unsigned int ibuf);
-int prinhint(va_list arguments, char *buf, unsigned int ibuf);
-int prinhunt(va_list arguments, char *buf, unsigned int ibuf);
-int prinhoct(va_list arguments, char *buf, unsigned int ibuf);
-int prinhhex(va_list arguments, char *buf, unsigned int ibuf);
-int prinhupx(va_list arguments, char *buf, unsigned int ibuf);
-int prinpint(va_list arguments, char *buf, unsigned int ibuf);
-int prinnoct(va_list arguments, char *buf, unsigned int ibuf);
-int prinnhex(va_list arguments, char *buf, unsigned int ibuf);
-int prinnupx(va_list arguments, char *buf, unsigned int ibuf);
-int prinsint(va_list arguments, char *buf, unsigned int ibuf);
-int (*get_print_func(const char *s, int index))(va_list, char *, unsigned int);
-int ev_print_func(const char *s, int index);
-unsigned int handl_buf(char *buf, char c, unsigned int ibuf);
-int print_buf(char *buf, unsigned int nbuf);
-char *fill_binary_array(char *binary, long int int_in, int isneg, int limit);
-char *fill_oct_array(char *bnr, char *oct);
-char *fill_long_oct_array(char *bnr, char *oct);
-char *fill_short_oct_array(char *bnr, char *oct);
-char *fill_hex_array(char *bnr, char *hex, int isupp, int limit);
-
+int (*get_print_function(char *format))(int, char *, va_list);
+int _putchar(char c);
+int print_char(int n, char *format, va_list args);
+int print_string(int n, char *format, va_list args);
+int print_int(int n, char *format, va_list args);
+int print_float(int n, char *format, va_list args);
+int print_binary(int n, char *format, va_list args);
+int print_hex(int n, char *format, va_list args);
+int print_octal(int n, char *format, va_list args);
+int print_unsigned_int(int n, char *format, va_list args);
+int print_address(int n, char *format, va_list args);
+int _is_alpha(char c);
+int _is_specifier(char c);
+unsigned int compute_places(unsigned int n, int step);
+int _strlen(char *s);
+char *rot13(char *str);
+char *_reverse_string(char *str);
+int print_reverse(int n, char *format, va_list args);
+int print_rot13(int n, char *format, va_list args);
+int print_custom_specifier(int n, char *format, va_list args);
+int _is_digit(char c);
+int _atoi(char *s);
+int _pow_recursion(int x, int y);
+int left_align(char *format, int n);
+int right_align(char *format, int n);
+int pad_zero(char *format, int n);
+int count_int(int n);
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+char *_strcpy(char *dest, char *src);
+int get_max_width(char *format);
+int get_min_width(char *format);
+int has_precision(char *str);
+int print_string_width(char *format, char *str);
+int print_integer_width(char *format, int n);
+char *to_octal(unsigned int n);
+char *to_hex(long unsigned int n);
+char *_tolower(char *str);
+char get_hex_code(int n);
+int _indexof(char *str, char c);
+int print_digit(int n, int is_int_min);
+/**
+ * struct hex_code - Struct hex_code
+ * @c: The character associated to this code
+ * @code: The digit for this char
+ * operation.
+ */
+typedef struct hex_code
+{
+	char c;
+	int code;
+} hex_code_t;
+int _puts(char *str);
 #endif
