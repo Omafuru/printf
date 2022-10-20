@@ -1,132 +1,82 @@
 #include "main.h"
 
 /**
- * print_char - prints character
- * @ap: argument pointer
- * @params: the parameters struct
+ * convert - converter function, a clone of itoa
+ * @num: number
+ * @base: base
+ * @flags: argument flags
+ * @params: paramater struct
  *
- * Return: number chars printed
+ * Return: string
  */
-int print_char(va_list ap, params_t *params)
+char *convert(long int num, int base, int flags, params_t *params)
 {
-	char pad_char = ' ';
-	unsigned int pad = 1, sum = 0, ch = va_arg(ap, int);
+	static char *array;
+	static char buffer[50];
+	char sign = 0;
+	char *ptr;
+	unsigned long n = num;
+	(void)params;
 
-	if (params->minus_flag)
-		sum += _putchar(ch);
-	while (pad++ < params->width)
-		sum += _putchar(pad_char);
-	if (!params->minus_flag)
-		sum += _putchar(ch);
-	return (sum);
+	if (!(flags & CONVERT_UNSIGNED) && num < 0)
+	{
+		n = -num;
+		sign = '-';
+	}
+	array = flags & CONVERT_LOWERCASE ? "0123456789abcdef" : "0123456789ABCDEF";
+	ptr = &buffer[49];
+	*ptr = '\0';
+
+	do	{
+		*--ptr = array[n % base];
+		n /= base;
+	} while (n != 0);
+
+	if (sign)
+		*--ptr = sign;
+	return (ptr);
 }
 
 /**
- * print_int - prints integer
+ * print_unsigned - prints unsigned integer numbers
  * @ap: argument pointer
  * @params: the parameters struct
  *
- * Return: number chars printed
+ * Return: bytes printed
  */
-int print_int(va_list ap, params_t *params)
+int print_unsigned(va_list ap, params_t *params)
 {
-	long l;
+	unsigned long l;
 
 	if (params->l_modifier)
-		l = va_arg(ap, long);
+		l = (unsigned long)va_arg(ap, unsigned long);
 	else if (params->h_modifier)
-		l = (short int)va_arg(ap, int);
+		l = (unsigned short int)va_arg(ap, unsigned int);
 	else
-		l = (int)va_arg(ap, int);
-	return (print_number(convert(l, 10, 0, params), params));
+		l = (unsigned int)va_arg(ap, unsigned int);
+	params->unsign = 1;
+	return (print_number(convert(l, 10, CONVERT_UNSIGNED, params), params));
 }
 
+
+
 /**
- * print_string - prints string
+ * print_address - prints address
  * @ap: argument pointer
  * @params: the parameters struct
  *
- * Return: number chars printed
+ * Return: bytes printed
  */
-int print_string(va_list ap, params_t *params)
+int print_address(va_list ap, params_t *params)
 {
-	char *str = va_arg(ap, char *), pad_char = ' ';
-	unsigned int pad = 0, sum = 0, i = 0, j;
+	unsigned long int n = va_arg(ap, unsigned long int);
+	char *str;
 
-	(void)params;
-	switch ((int)(!str))
-		case 1:
-			str = NULL_STRING;
+	if (!n)
+		return (_puts("(nil)"));
 
-	j = pad = _strlen(str);
-	if (params->precision < pad)
-		j = pad = params->precision;
-
-	if (params->minus_flag)
-	{
-		if (params->precision != UINT_MAX)
-			for (i = 0; i < pad; i++)
-				sum += _putchar(*str++);
-		else
-			sum += _puts(str);
-	}
-	while (j++ < params->width)
-		sum += _putchar(pad_char);
-	if (!params->minus_flag)
-	{
-		if (params->precision != UINT_MAX)
-			for (i = 0; i < pad; i++)
-				sum += _putchar(*str++);
-		else
-			sum += _puts(str);
-	}
-	return (sum);
-}
-
-/**
- * print_percent - prints string
- * @ap: argument pointer
- * @params: the parameters struct
- *
- * Return: number chars printed
- */
-int print_percent(va_list ap, params_t *params)
-{
-	(void)ap;
-	(void)params;
-	return (_putchar('%'));
-}
-
-/**
- * print_S - custom format specifier
- * @ap: argument pointer
- * @params: the parameters struct
- *
- * Return: number chars printed
- */
-int print_S(va_list ap, params_t *params)
-{
-	char *str = va_arg(ap, char *);
-	char *hex;
-	int sum = 0;
-
-	if ((int)(!str))
-		return (_puts(NULL_STRING));
-	for (; *str; str++)
-	{
-		if ((*str > 0 && *str < 32) || *str >= 127)
-		{
-			sum += _putchar('\\');
-			sum += _putchar('x');
-			hex = convert(*str, 16, 0, params);
-			if (!hex[1])
-				sum += _putchar('0');
-			sum += _puts(hex);
-		}
-		else
-		{
-			sum += _putchar(*str);
-		}
-	}
-	return (sum);
+	str = convert(n, 16, CONVERT_UNSIGNED | CONVERT_LOWERCASE, params);
+	*--str = 'x';
+	*--str = '0';
+	return (print_number(str, params));
 }
